@@ -216,7 +216,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
     If there's no launchable then we use a heuristic to try and create one
     
     QUESTION: Is there a screenshot where i could see the effect of using different IDs for gs_app_new() vs. gs_app_set_branch()?
-    hughsie: ...
+    hughsie: Not really, but you can use gnome-software-cmd like this: /usr/libexec/gnome-software-cmd search --refine-flags=icon --show-results
     
     I see:
     08:20:32:0181 Gs  searching appstream for user / * / * / desktop / appimagekit_98080cfc981c9098c6a5e41794add640-deepin-screenshot.desktop / *
@@ -242,15 +242,14 @@ gs_plugin_file_to_app (GsPlugin *plugin,
     g_autoptr(GsApp) app = NULL;
     g_autoptr(AsIcon) icon = NULL;
   
-    app = gs_app_new ("NULL"); // NOTE: We set the ID down below, including the md5 from appimage_get_md5
+    app = gs_app_new ("NULL"); // NOTE: We set the ID down below, including the md5 from appimage_get_md5. hughsie recommends reverse DNS, and it should match the desktop file and the id in the AppStream XML
     gs_app_set_scope (app, AS_APP_SCOPE_USER);
     gs_app_set_management_plugin (app, "appimage");
     gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
     gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_APPIMAGE);
     gs_app_set_local_file (app, file);
-    gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE); // QUESTION: How to mark "3rd party"?
+    // gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE); // QUESTION: How to mark "3rd party"? hughsie: PROVENANCE usually means the opposite, e.g. it's from the distro
     // gs_app_set_state (app, AS_APP_STATE_AVAILABLE_LOCAL);
-    // QUESTION: Is there an easier way to make an app from an exsiting desktop file, without reading each value manually using g_key_file_get_value?
     gs_app_set_name (app, GS_APP_QUALITY_NORMAL, g_key_file_get_value(key_file_structure, G_KEY_FILE_DESKTOP_GROUP, G_KEY_FILE_DESKTOP_KEY_NAME, NULL));
     gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, g_key_file_get_value(key_file_structure, G_KEY_FILE_DESKTOP_GROUP, G_KEY_FILE_DESKTOP_KEY_COMMENT, NULL));
     gs_app_set_description (app, GS_APP_QUALITY_NORMAL, g_key_file_get_value(key_file_structure, G_KEY_FILE_DESKTOP_GROUP, G_KEY_FILE_DESKTOP_KEY_COMMENT, NULL));
@@ -288,6 +287,8 @@ gs_plugin_file_to_app (GsPlugin *plugin,
     
     // QUESTION: "Install" doesn't really cut it. For AppImages, we would want 
     // "Move to /Applications", "Move to $HOME/Applications", etc. Is there a way to cusomize this?
+    // hughsie: In gnome-software they'd be different "scope" and therefore different GsApp
+    // others want the same kind of feature, so it's probably something we ought to support
   
     /* return new app */
     gs_app_list_add (list, app);
@@ -322,7 +323,7 @@ QUESTION: What does "app invalid as state unknown user" mean? Probably I have to
 */
 
 gboolean
-gs_plugin_add_installed (GsPlugin *plugin,
+  gs_plugin_add_installed (GsPlugin *plugin,
                          GsAppList *list,
                          GCancellable *cancellable,
                          GError **error)
@@ -349,7 +350,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 
     /* create a stock icon which will be loaded by the 'icons' plugin
      * NOTE: Without doing this, it will NOT show up in the list of installed files.
-     * QUESTION: Is this intentional?
+     * QUESTION: Is this intentional? hughsie: yes, an app needs an icon
      */
     icon = as_icon_new ();
     as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
@@ -362,3 +363,21 @@ gs_plugin_add_installed (GsPlugin *plugin,
     return TRUE;
 }
 
+/*
+QUESTION: Can plugins have their own settings, and where would the GUI for these be?
+hughsie: There is a gsetting key to be shared by plugins for this
+
+QUESTION: How do I populate the list of installable apps?
+hughsie: You just return the GsApps when the frontend wants results;
+typically that'll be add_popular, add_featured or search()
+
+QUESTION: I assume it uses the XDG desktop categories?
+hughsie: It does; just make sure it has the right "categories"
+
+QUESTION: How to make all of https://appimage.github.io/feed.json
+show up in gs in the respective categories?
+hughsie: Is that data available as appstream xml too? That's the easiest way; 
+otherwise you have to handle the add_categories()
+and add_categories_ap()
+
+*/
