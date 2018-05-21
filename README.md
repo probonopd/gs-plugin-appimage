@@ -20,7 +20,7 @@ Once this plugin is complete, it should:
   if it hasn't already been integrated into the system (in which case we show the information
   regarding this AppImage version of the application (only) and offer to run or "uninstall", which in our case
   means unintegrate with the system and delete the AppImage file
-* Show available AppImages from https://appimage.github.io/feed.xmlfeed.xml as installable
+* Show available AppImages from https://appimage.github.io/pages/appstream.xml as installable
 * Be able to check for and trigger updates using libappimageupdate.
   Ideally only if a user triggers a version check explicitly. Don't "check all the AppImages on the whole system"
   because checking versions results in http requests for each application, and we may run into quota quickly
