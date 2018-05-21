@@ -41,7 +41,7 @@ sudo sed -i-e 's|flatpak|appimage|g' /usr/lib/x86_64-linux-gnu/pkgconfig/appimag
 
 sudo apt update
 sudo apt -y install gnome-software-dev git
-sudo apt-get -y build-dep gnome-software
+# sudo apt-get -y build-dep gnome-software
 # NOTE: Probably we can't compile against git if I want the plugin work on Ubuntu 18.04.
 # At least that's how I read DI_KNOW_THE_GNOME_SOFTWARE_API_IS_SUBJECT_TO_CHANGE.
 # This makes it hard to change stuff in this plugin and still provide it for LTS versions of distros out there
@@ -58,21 +58,27 @@ sudo apt-get -y build-dep gnome-software
 
 # cd contrib/
 
+# Build and install libappimage and libappimageupdate according
+# to the instructions on
+# https://github.com/AppImage/AppImageUpdate/blob/rewrite/BUILDING.md#building-the-libraries
+
 wget https://gist.githubusercontent.com/probonopd/daf76c281e3156fc9f887691b06f8180/raw/gs-plugin-appimage.c
 
 gcc -shared -o libgs_plugin_appimage.so gs-plugin-appimage.c -fPIC \
-`pkg-config --libs --cflags gnome-software` -lappimage \
--DI_KNOW_THE_GNOME_SOFTWARE_API_IS_SUBJECT_TO_CHANGE
+`pkg-config --libs --cflags gnome-software` -I/usr/include/appimage \
+-lappimage -DI_KNOW_THE_GNOME_SOFTWARE_API_IS_SUBJECT_TO_CHANGE
 
 # Install system-wide
 sudo cp libgs_plugin_appimage.so `pkg-config gnome-software --variable=plugindir`
+#  Run system GNOME Software
+gnome-software --verbose
 
-# Install privately (in case we have built our private gnome-software which may not be necessary)
+# Alternatively, can install privately
+# (in case we have built our private gnome-software which may not be necessary)
 cp libgs_plugin_appimage.so ../install/lib/x86_64-linux-gnu/gs-plugins-11/
+#  Run private GNOME Software
 XDG_DATA_DIRS=install/share:$XDG_DATA_DIRS ../install/bin/gnome-software --verbose  2>&1
-
 */
-
 
 void
 gs_plugin_initialize (GsPlugin *plugin)
