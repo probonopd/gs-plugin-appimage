@@ -416,7 +416,11 @@ it's the same XML as an appdata file, wraped up in <components>
   </component>
 </components>
 
-you'd just return them as results for the various query methods
+Just return them as results for the various query methods
 e.g. we never show "all" the apps that can be installed
+
+What most plugins do is use gs_plugin_search() and then if they need some shared resource
+call into some plugin_specific_ensure() thing to open store, parse xml etc.,
+e.g. not do it in gs_plugin_setup() if it's going to take time
 
 */
