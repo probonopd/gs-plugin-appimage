@@ -58,11 +58,16 @@ ninja -C build/ all install
 
 cd contrib/
 
-gcc -shared -o libgs_plugin_example.so gs-plugin-example.c -fPIC \
+wget https://gist.githubusercontent.com/probonopd/daf76c281e3156fc9f887691b06f8180/raw/gs-plugin-appimage.c
+
+gcc -shared -o libgs_plugin_appimage.so gs-plugin-appimage.c -fPIC \
 `pkg-config --libs --cflags gnome-software appimage` \
--DI_KNOW_THE_GNOME_SOFTWARE_API_IS_SUBJECT_TO_CHANGE &&
+-DI_KNOW_THE_GNOME_SOFTWARE_API_IS_SUBJECT_TO_CHANGE
+
+# Install system-wide
 sudo cp libgs_plugin_appimage.so `pkg-config gnome-software --variable=plugindir`
 
+# Install privately
 cp libgs_plugin_appimage.so ../install/lib/x86_64-linux-gnu/gs-plugins-11/
 XDG_DATA_DIRS=install/share:$XDG_DATA_DIRS ../install/bin/gnome-software --verbose  2>&1
 
