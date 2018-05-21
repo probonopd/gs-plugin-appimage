@@ -380,4 +380,43 @@ hughsie: Is that data available as appstream xml too? That's the easiest way;
 otherwise you have to handle the add_categories()
 and add_categories_ap()
 
+QUESTION: do you have a minimal viable example of the kind of distro appstream xml needed that you were referring to?
+hughsie: yaml is supported, but it's had nowhere near the memory optimisation work
+it's the same XML as an appdata file, wraped up in <components>
+
+<!-- Copyright 2017 The Chromium Authors -->
+<?xml version="1.0" encoding="UTF-8"?>
+<components version="0.8" origin="">
+  <component type="desktop">
+    <id>google-chrome.desktop</id>
+    <pkgname>google-chrome-stable</pkgname>
+    <!-- icon from https://play.google.com/store/apps/details?id=com.android.chrome -->
+    <icon type="remote">https://lh3.googleusercontent.com/nYhPnY2I-e9rpqnid9u9aAODz4C04OycEGxqHG5vxFnA35OGmLMrrUmhM9eaHKJ7liB-=w300</icon>
+    <update_contact>chromium-dev@chromium.org</update_contact>
+    <metadata_license>CC0-1.0</metadata_license>
+    <project_license>Freeware under Google Chrome Terms of Service</project_license>
+    <name>Google Chrome</name>
+    <summary>The web browser from Google</summary>
+    <description>
+      <p>
+      Google Chrome is a browser that combines a minimal design with sophisticated technology to make the web faster, safer, and easier.
+     </p>
+    </description>
+    <url type="homepage">https://chrome.google.com/</url>
+    <screenshots>
+      <screenshot type="default">
+        <image>https://www.gstatic.com/chrome/appstream/chrome-2.png</image>
+        <caption/>
+      </screenshot>
+    </screenshots>
+    <translation/>
+    <developer_name>Google</developer_name>
+    <url type="bugtracker">https://support.google.com/chrome/?p=feedback</url>
+    <url type="help">https://support.google.com/chrome</url>
+  </component>
+</components>
+
+you'd just return them as results for the various query methods
+e.g. we never show "all" the apps that can be installed
+
 */
