@@ -80,7 +80,10 @@ gs_plugin_initialize (GsPlugin *plugin)
     gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_BETTER_THAN, "packagekit");
 }
 
-/* Claim AppImages that should be handled by this plugin */
+/* Claim AppImages that should be handled by this plugin.
+hughsie: gnome-software doesn't understand what a desktop file is but appstrem-glib does, so we need
+to let appstream-glib discover them and then adopt them in the plugin
+*/
 void
 gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 {
@@ -89,7 +92,9 @@ gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 }
 
 /* Launch AppImages
- * QUESTION: Do I even need to do something special? Why doesn't it just launch the desktop file? */
+ * QUESTION: Do I even need to do something special? Why doesn't it just launch the desktop file?
+ * hughsie: don't implement gs_plugin_launch and see if it works (it should)
+ */
 gboolean
 gs_plugin_launch (GsPlugin *plugin,
                   GsApp *app,
@@ -175,6 +180,9 @@ gs_plugin_file_to_app (GsPlugin *plugin,
     gboolean success = FALSE;
     GKeyFile* key_file_structure =  g_key_file_new();
 
+    /* QUESTION: Do we need to load desktop files like this?
+     * hughsie: appstream-glib can do that work
+     */
     g_debug("Loading AppImage desktop file from %s", extracted_desktop_file);
     success = g_key_file_load_from_file(key_file_structure, extracted_desktop_file, G_KEY_FILE_KEEP_COMMENTS | G_KEY_FILE_KEEP_TRANSLATIONS, NULL);
     if (!success) {
@@ -182,24 +190,39 @@ gs_plugin_file_to_app (GsPlugin *plugin,
         appimage_string_list_free(files);
         return FALSE;
     } else {
-        g_debug("Loaded AppImage desktop file");  // QUESTION: Can we directly gs_app_new() from this?
+        g_debug("Loaded AppImage desktop file");  // QUESTION: Can we directly gs_app_new() from this? hughsie: use appstream-glib
     }
 
     /* TODO: AppStream
     Save an AppStream-format XML file in either /usr/share/app-info/xmls/, /var/cache/app-info/xmls/ or ~/.local/share/app-info/xmls/. GNOME Software will immediately notice any new files, or changes to existing files as it has set up the various inotify watches.
+    
+    QUESTION: Do we need to copy XML there for AppImages that are not integrated into the system? 
+    Can we load in data from an xml file which we delete immediately afterwards?
+    Because we don't want to litter the system with XML files.
+    hughsie: Don't need to copy; just use the helpers in gs-appstream.c; 
+    e.g. the Flatpak plugin loads the AppStream xml from a nonstandard path
 
-    QUESTION: If we need to ensure that our AppStream information is not mixed with AppStream information from other locations or from version to version of an application, is it OK to place it in
+    QUESTION: If we need to ensure that our AppStream information is not mixed with AppStream 
+    information from other locations or from version to version of an application, is it OK to place it in
     /home/me/.local/share/app-info/xmls/appimagekit_98080cfc981c9098c6a5e41794add640-deepin-screenshot.appdata.xml
+    hughsie: the filename is almost unimportant, it's the <id> that has to match
 
-    QUESTION: If we have appimagekit_98080cfc981c9098c6a5e41794add640-deepin-screenshot.desktop in one of the well-known locations for desktop files, will it automatically be associated with the AppStream metadata from above?
+    QUESTION: If we have appimagekit_98080cfc981c9098c6a5e41794add640-deepin-screenshot.desktop in one of 
+    the well-known locations for desktop files, will it automatically be associated with the AppStream metadata from above?
+    hughsie: the filename is almost unimportant, it's the <id> that has to match
+    
+    QUESTION: Is the AppStream ID the same as the gs ID?
+    hughsie: In most cases, yes. The appstream file can also have a <launchable> tab pointing to the desktop file.
+    If there's no launchable then we use a heuristic to try and create one
+    
+    QUESTION: Is there a screenshot where i could see the effect of using different IDs for gs_app_new() vs. gs_app_set_branch()?
+    hughsie: ...
     
     I see:
     08:20:32:0181 Gs  searching appstream for user / * / * / desktop / appimagekit_98080cfc981c9098c6a5e41794add640-deepin-screenshot.desktop / *
 
-    QUESTION: Can we load in data from an xml file which we delete immediately afterwards?
-    Because we don't want to litter the system with XML files.
-
     QUESTION: Should we have appimaged (also) integrate AppStream files to ~/.local/share/app-info/xmls/?
+    hughsie: I think using reverse DNS style IDs everywhere is a very good idea; I also think it's too early to optimise anything
     */
 
     g_autofree gchar *md5 = appimage_get_md5(g_file_get_path (file));
@@ -207,6 +230,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
     /* The following does not work; the page never loads (just shows spinner)
         g_autofree gchar *appstream_file;
         // QUESTION: desktop_file.replace("desktop", "") is missing in Glib apparently - why?
+        // hughsie: There is as_string_replace if you have a GString
         g_autofree gchar *appstream_filename = g_strconcat (g_path_get_basename(desktop_file), "appdata.xml", NULL);
         g_autofree gchar *extracted_appstream_file = g_strconcat(g_get_user_data_dir(), "/app-info/xmls/", "appimagekit_", md5, "-", appstream_filename, NULL);
 
@@ -214,13 +238,10 @@ gs_plugin_file_to_app (GsPlugin *plugin,
         g_debug("AppImage AppStream file to be extracted to: %s", extracted_appstream_file);
     */
 
-
     g_autofree gchar *fn = NULL;
     g_autoptr(GsApp) app = NULL;
     g_autoptr(AsIcon) icon = NULL;
-
-    /* NOTE: "The application ID (example:chiron.desktop) has a prefix of example which means we can co-exist with any package or flatpak version of the Chiron application, not setting the prefix would make the UI confused if more than one chiron.desktop got added" - QUESTION: For this reason, we embed the md5 into the ID to make the ID distinctive and support many different versions of the application, each with its own distinct set of metadata, in parallel */
-
+  
     app = gs_app_new ("NULL"); // NOTE: We set the ID down below, including the md5 from appimage_get_md5
     gs_app_set_scope (app, AS_APP_SCOPE_USER);
     gs_app_set_management_plugin (app, "appimage");
