@@ -16,7 +16,7 @@ cd gs-plugin-appimage/
 # https://github.com/AppImage/AppImageUpdate/blob/rewrite/BUILDING.md#building-the-libraries
 
 gcc -shared -o libgs_plugin_appimage.so gs-plugin-appimage.c -fPIC \
-`pkg-config --libs --cflags gnome-software` -I/usr/include/appimage \
+`pkg-config --libs --cflags gnome-software` \
 -lappimage -DI_KNOW_THE_GNOME_SOFTWARE_API_IS_SUBJECT_TO_CHANGE
 
 # Install system-wide
