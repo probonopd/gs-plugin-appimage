@@ -48,26 +48,26 @@ sudo apt-get -y build-dep gnome-software
 # without making an AppImage of GNOME Software and this plugin to run on the oldest LTS distros out there.
 # Systematically, I want all my stuff to run on the oldest LTS releases (so that "all users" out there can use it). 
 # Which is why normally I only develop on the oldest still-supported LTS releases
-wget http://archive.ubuntu.com/ubuntu/pool/main/g/gnome-software/gnome-software_3.28.1.orig.tar.xz
-tar xf gnome-software_*.orig.tar.xz
+# wget http://archive.ubuntu.com/ubuntu/pool/main/g/gnome-software/gnome-software_3.28.1.orig.tar.xz
+# tar xf gnome-software_*.orig.tar.xz
 # git clone https://github.com/GNOME/gnome-software
-cd gnome-software-*
+# cd gnome-software-*
 
-meson --prefix $PWD/install build/
-ninja -C build/ all install
+# meson --prefix $PWD/install build/
+# ninja -C build/ all install
 
-cd contrib/
+# cd contrib/
 
 wget https://gist.githubusercontent.com/probonopd/daf76c281e3156fc9f887691b06f8180/raw/gs-plugin-appimage.c
 
 gcc -shared -o libgs_plugin_appimage.so gs-plugin-appimage.c -fPIC \
-`pkg-config --libs --cflags gnome-software appimage` \
+`pkg-config --libs --cflags gnome-software` -lappimage \
 -DI_KNOW_THE_GNOME_SOFTWARE_API_IS_SUBJECT_TO_CHANGE
 
 # Install system-wide
 sudo cp libgs_plugin_appimage.so `pkg-config gnome-software --variable=plugindir`
 
-# Install privately
+# Install privately (in case we have built our private gnome-software which may not be necessary)
 cp libgs_plugin_appimage.so ../install/lib/x86_64-linux-gnu/gs-plugins-11/
 XDG_DATA_DIRS=install/share:$XDG_DATA_DIRS ../install/bin/gnome-software --verbose  2>&1
 
