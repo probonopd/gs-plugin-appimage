@@ -28,10 +28,6 @@ Once this plugin is complete, it should:
   Only offer updates if the user asks for them for this app at a certain point in time.
   "Updating" for AppImage means, "Download the latest version _in addition to_ the existing version"
   and keep around both (for rollback reasons)
-  
-Install libappimage-dev (e.g., from the Nitrux repo or possibly by compiling from git), then run:
-sudo cp /usr/lib/x86_64-linux-gnu/pkgconfig/flatpak.pc /usr/lib/x86_64-linux-gnu/pkgconfig/appimage.pc
-sudo sed -i-e 's|flatpak|appimage|g' /usr/lib/x86_64-linux-gnu/pkgconfig/appimage.pc # TODO: Ship libappimage with a .pc file
 
 # TODO: Ship libappimage with a .a file so that we can link it statically
 # TODO: Link libappimage statically so that this plugin doesn't have a runtime dependency on it;
