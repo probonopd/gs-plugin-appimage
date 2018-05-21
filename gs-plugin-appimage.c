@@ -3,7 +3,7 @@
  */
 
 #include <gnome-software.h>
-#include <appimage.h> // From https://github.com/AppImage/AppImageKit
+#include <appimage/appimage.h> // From https://github.com/AppImage/AppImageKit
 #include <sys/stat.h>
 
 void
