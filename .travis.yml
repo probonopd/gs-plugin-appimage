@@ -11,7 +11,8 @@ before_install:
   - docker ps
 
 script:
-  - docker exec -t ubuntu-test bash -c "cd /travis;
+  - docker exec -t ubuntu-test bash -c "cd /travis ;
+    apt update ;
     apt -y install sudo gnome-software-dev git wget git cmake g++ libcurl4-openssl-dev libx11-dev libz-dev libssl-dev libinotifytools0-dev libarchive-dev libfuse-dev liblzma-dev ;
     git clone --recursive https://github.com/AppImage/AppImageUpdate ;
     cd AppImageUpdate/ ;
@@ -21,7 +22,7 @@ script:
     make -j$(nproc) ;
     sudo make install ;
     cd .. ;
-    git clone re. --recursive https://github.com/AppImage/AppImageKit ;
+    git clone --recursive https://github.com/AppImage/AppImageKit ;
     cd AppImageKit/ ;
     mkdir build/ ;
     cd build/ ;
