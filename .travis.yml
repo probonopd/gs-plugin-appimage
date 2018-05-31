@@ -5,7 +5,7 @@ services:
   - docker
 
 script:
-  - docker exec -it -v $(readlink -f .):/ws --rm ubuntu:bionic bash -xc "
+  - docker run --rm -it -v $(readlink -f .):/ws ubuntu:bionic bash -xc "
       apt update &&
       apt -y install sudo gnome-software-dev git wget git cmake g++ libcurl4-openssl-dev libx11-dev libz-dev libssl-dev
         libinotifytools0-dev libarchive-dev libfuse-dev liblzma-dev &&
