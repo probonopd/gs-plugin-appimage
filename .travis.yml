@@ -21,7 +21,7 @@ script:
     cmake -DBUILD_QT_UI=OFF -DCMAKE_INSTALL_PREFIX=/usr .. ;
     make -j$(nproc) ;
     sudo make install ;
-    cd .. ;
+    cd ../.. ;
     git clone --recursive https://github.com/AppImage/AppImageKit ;
     cd AppImageKit/ ;
     mkdir build/ ;
@@ -29,7 +29,7 @@ script:
     cmake -DUSE_SYSTEM_XZ=ON -DUSE_SYSTEM_INOTIFY_TOOLS=ON -DUSE_SYSTEM_LIBARCHIVE=ON -DUSE_SYSTEM_GTEST=OFF -DCMAKE_INSTALL_PREFIX=/usr .. ;
     make -j$(nproc) ;
     sudo make install ;
-    cd .. ;
+    cd ../.. ;
     gcc -shared -o libgs_plugin_appimage.so gs-plugin-appimage.c -fPIC `pkg-config --libs --cflags gnome-software` -lappimage -DI_KNOW_THE_GNOME_SOFTWARE_API_IS_SUBJECT_TO_CHANGE"
 
 notifications:
