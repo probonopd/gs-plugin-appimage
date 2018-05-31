@@ -15,6 +15,7 @@ script:
     apt update ;
     apt -y -qq install sudo gnome-software-dev git wget git cmake g++ libcurl4-openssl-dev libx11-dev libz-dev libssl-dev libinotifytools0-dev libarchive-dev libfuse-dev liblzma-dev ;
     find /usr/include/ | grep gnome-software ;
+    pkg-config --libs --cflags gnome-software ; 
     git clone --recursive https://github.com/AppImage/AppImageUpdate ;
     cd AppImageUpdate/ ;
     mkdir build/ ;
