@@ -14,6 +14,7 @@ script:
   - docker exec -t ubuntu-test bash -c "cd /travis ;
     apt update ;
     apt -y -qq install sudo gnome-software-dev git wget git cmake g++ libcurl4-openssl-dev libx11-dev libz-dev libssl-dev libinotifytools0-dev libarchive-dev libfuse-dev liblzma-dev ;
+    find /usr/include/ | grep gnome-software ;
     git clone --recursive https://github.com/AppImage/AppImageUpdate ;
     cd AppImageUpdate/ ;
     mkdir build/ ;
@@ -30,12 +31,11 @@ script:
     make -j$(nproc) ;
     sudo make install ;
     cd ../.. ;
-    wget "https://raw.githubusercontent.com/probonopd/gs-plugin-appimage/master/gs-plugin-appimage.c" ;
     gcc -shared -o libgs_plugin_appimage.so gs-plugin-appimage.c -fPIC `pkg-config --libs --cflags gnome-software` -lappimage -DI_KNOW_THE_GNOME_SOFTWARE_API_IS_SUBJECT_TO_CHANGE ;
     ls -lh ."
 
 after_success:
-  - ls -lh $(pwd):/travis
+  - ls -lh .
   
 notifications:
     email: false
