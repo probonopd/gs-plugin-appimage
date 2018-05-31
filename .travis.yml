@@ -30,7 +30,12 @@ script:
     make -j$(nproc) ;
     sudo make install ;
     cd ../.. ;
-    gcc -shared -o libgs_plugin_appimage.so gs-plugin-appimage.c -fPIC `pkg-config --libs --cflags gnome-software` -lappimage -DI_KNOW_THE_GNOME_SOFTWARE_API_IS_SUBJECT_TO_CHANGE"
+    wget "https://raw.githubusercontent.com/probonopd/gs-plugin-appimage/master/gs-plugin-appimage.c" ;
+    gcc -shared -o libgs_plugin_appimage.so gs-plugin-appimage.c -fPIC `pkg-config --libs --cflags gnome-software` -lappimage -DI_KNOW_THE_GNOME_SOFTWARE_API_IS_SUBJECT_TO_CHANGE ;
+    ls -lh ."
 
+after_success:
+  - ls -lh $(pwd):/travis
+  
 notifications:
     email: false
