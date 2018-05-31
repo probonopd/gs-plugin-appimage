@@ -14,29 +14,11 @@ script:
   - docker exec -t ubuntu-test bash -c "cd /travis ;
     apt update ;
     apt -y -qq install sudo gnome-software-dev git wget git cmake g++ libcurl4-openssl-dev libx11-dev libz-dev libssl-dev libinotifytools0-dev libarchive-dev libfuse-dev liblzma-dev ;
-    find /usr/include/ | grep gnome-software ;
-    pkg-config --libs --cflags gnome-software ; 
-    git clone --recursive https://github.com/AppImage/AppImageUpdate ;
-    cd AppImageUpdate/ ;
-    mkdir build/ ;
-    cd build/ ;
-    cmake -DBUILD_QT_UI=OFF -DCMAKE_INSTALL_PREFIX=/usr .. ;
-    make -j$(nproc) ;
-    sudo make install ;
-    cd ../.. ;
-    git clone --recursive https://github.com/AppImage/AppImageKit ;
-    cd AppImageKit/ ;
-    mkdir build/ ;
-    cd build/ ;
-    cmake -DUSE_SYSTEM_XZ=ON -DUSE_SYSTEM_INOTIFY_TOOLS=ON -DUSE_SYSTEM_LIBARCHIVE=ON -DUSE_SYSTEM_GTEST=OFF -DCMAKE_INSTALL_PREFIX=/usr .. ;
-    make -j$(nproc) ;
-    sudo make install ;
-    cd ../.. ;
-    gcc -shared -o libgs_plugin_appimage.so gs-plugin-appimage.c -fPIC `pkg-config --libs --cflags gnome-software` -lappimage -DI_KNOW_THE_GNOME_SOFTWARE_API_IS_SUBJECT_TO_CHANGE ;
-    ls -lh ."
+    mkdir build ; cd build ; cmake .. ; make -j$(nproc) ; cd .. ;
+    ls -lh build/"
 
 after_success:
-  - ls -lh .
+  - ls -lh build/
   
 notifications:
     email: false
