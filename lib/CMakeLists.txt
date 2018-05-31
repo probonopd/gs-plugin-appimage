@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.6)
 
 add_subdirectory(AppImageKit EXCLUDE_FROM_ALL)
 
+set(BUILD_QT_UI OFF CACHE BOOL "" FORCE)
 add_subdirectory(AppImageUpdate EXCLUDE_FROM_ALL)
 
 #if(NOT USE_SYSTEM_GNOME_SOFTWARE)
