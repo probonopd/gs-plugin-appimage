@@ -2,6 +2,8 @@
 
 Plugin for [GNOME Software](https://wiki.gnome.org/Apps/Software) to manage applications in the [AppImage](https://appimage.org/) format ([specification](https://github.com/AppImage/AppImageSpec)). 
 
+![](https://user-images.githubusercontent.com/2480569/40774109-45d9d300-64b4-11e8-9e2d-5a4c151c9f2e.png)
+
 Note that the use of GNOME Software is purely optional, as AppImages do not need to be installed in order to be used.
 Nevertheless, this may add comfort to some users who are already using GNOME Software to manager other software.
 
