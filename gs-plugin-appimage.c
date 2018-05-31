@@ -2,7 +2,7 @@
  * Licensing to be determined (MIT like AppImageKit or GPLv2 like GNOME Software)
  */
 
-#include <gnome-software.h>
+#include <gnome-software/gnome-software.h>
 #include <appimage/appimage.h> // From https://github.com/AppImage/AppImageKit
 #include <sys/stat.h>
 
