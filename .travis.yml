@@ -1,39 +1,17 @@
+language: c
 sudo: required
 
 services:
   - docker
 
-# It is not really needed, other than for showing correct language tag in Travis CI build log.
-language: cpp
-
-before_install:
-  - docker run -d --name ubuntu-test -v $(pwd):/travis ubuntu:latest tail -f /dev/null
-  - docker ps
-
 script:
-  - docker exec -t ubuntu-test bash -c "cd /travis ;
-    apt update ;
-    apt -y -qq install sudo gnome-software-dev git wget git cmake g++ libcurl4-openssl-dev libx11-dev libz-dev libssl-dev libinotifytools0-dev libarchive-dev libfuse-dev liblzma-dev ;
-    find /usr/include/ | grep gnome-software ;
-    pkg-config --libs --cflags gnome-software ; 
-    git clone --recursive https://github.com/AppImage/AppImageUpdate ;
-    cd AppImageUpdate/ ;
-    mkdir build/ ;
-    cd build/ ;
-    cmake -DBUILD_QT_UI=OFF -DCMAKE_INSTALL_PREFIX=/usr .. ;
-    make -j$(nproc) ;
-    sudo make install ;
-    cd ../.. ;
-    git clone --recursive https://github.com/AppImage/AppImageKit ;
-    cd AppImageKit/ ;
-    mkdir build/ ;
-    cd build/ ;
-    cmake -DUSE_SYSTEM_XZ=ON -DUSE_SYSTEM_INOTIFY_TOOLS=ON -DUSE_SYSTEM_LIBARCHIVE=ON -DUSE_SYSTEM_GTEST=OFF -DCMAKE_INSTALL_PREFIX=/usr .. ;
-    make -j$(nproc) ;
-    sudo make install ;
-    cd ../.. ;
-    gcc -shared -o libgs_plugin_appimage.so gs-plugin-appimage.c -fPIC `pkg-config --libs --cflags gnome-software` -lappimage -DI_KNOW_THE_GNOME_SOFTWARE_API_IS_SUBJECT_TO_CHANGE ;
-    ls -lh ."
+  - docker exec -it -v $(readlink -f .):/ws --rm ubuntu:bionic bash -xc "
+      apt update &&
+      apt -y install sudo gnome-software-dev git wget git cmake g++ libcurl4-openssl-dev libx11-dev libz-dev libssl-dev
+        libinotifytools0-dev libarchive-dev libfuse-dev liblzma-dev &&
+      cd /ws &&
+      bash -xe travis/travis-build.sh
+    "
 
 after_success:
   - ls -lh .
