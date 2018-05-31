@@ -13,7 +13,7 @@ before_install:
 script:
   - docker exec -t ubuntu-test bash -c "cd /travis ;
     apt update ;
-    apt -y -qq install sudo gnome-software-dev git wget git cmake g++ libcurl4-openssl-dev libx11-dev libz-dev libssl-dev libinotifytools0-dev libarchive-dev libfuse-dev liblzma-dev ;
+    apt -y -qq install sudo gnome-software-dev git wget git xxd cmake g++ libcurl4-openssl-dev libx11-dev libz-dev libssl-dev libinotifytools0-dev libarchive-dev libfuse-dev liblzma-dev ;
     mkdir build ; cd build ; cmake .. ; make -j$(nproc) ; cd .. ;
     ls -lh build/"
 
